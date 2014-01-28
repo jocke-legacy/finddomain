@@ -13,23 +13,27 @@ that still are unregistered.
     finddomain [OPTIONS]
 
 ### Available options
-  * -c --length _LENGTH_  
+  * -c --length LENGTH  
      The length of your desired domain name  
      Default: 4
-  * -t --top-level-domain _TLD_  
+  * -t --top-level-domain TLD  
     The TLD you want to search in.  
     If not specified it will try most of the top level domains that exists  
-    at the time of writing.
+    at the time of writing.  
     You can specify multiple TLDs by separation them with a `,` (no spaces!)
-  * -l --letters _LETTERS_  
+  * -l --letters LETTERS  
     The letters you want your domain to contain.  
     Default: [a-zA-Z0-9-]
-  * -s --sleep _SECONDS_  
+  * -s --sleep SECONDS  
     Some whois servers may temporarily ban you when doing many queries in short notice.  
     The argument can be written as a fractal.  
     Default: 1
+  * -b --beginning COMBINATION  
+    The search is performed in alphabetical order. With this option you can  
+    choose which combination to start with (this reduces the number of domains that  
+    will be searchd)
   * -v --verbose
-    Verbose output.
+    Verbose output.  
     Default: Set if single tld is being used.
 
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import sys, getopt, itertools, subprocess, re, time
+import sys, getopt, subprocess, re, time
+from itertools import product, repeat, dropwhile
 
 tlds = ['biz', 'cat',
         'com', 'int',
@@ -75,29 +76,25 @@ tlds = ['biz', 'cat',
         'yu', 'za', 'zm', 'zw'  ]
 
 
-
 def help():
     print('Usage: finddomain [OPTIONS]\nsee README.md')
+
 
 def main(argv):
     global tlds
     
-    if not len(argv):
-        print('No arguments.')
-        help()
-        exit(1)
-    
-    try: opts, args = getopt.getopt(argv, 'hvc:t:l:s:', ['help', 'verbose', 'length=', 'top-level-domain=', 'letters=', 'sleep='])
+    try: opts, args = getopt.getopt(argv, 'hvc:t:l:b:s:', ['help', 'verbose', 'length=', 'top-level-domain=', 'letters=', 'beginning=', 'sleep='])
     except getopt.GetoptError as err:
         print(str(err))
         help()
-        sys.exit(1)
+        exit(1)
 
     verbose       = False
-    domain_length = 4;
-    sleep_time    = 1;
-    letters       = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    for (opt, arg) in opts:
+    domain_length = 4
+    sleep_time    = 1
+    letters       = 'abcdefghijklmnopqrstuvwxyz0123456789-'
+
+    for opt, arg in opts:
         if opt in ('-h', '--help'):
             help()
             exit(1)
@@ -108,31 +105,31 @@ def main(argv):
         elif opt in ('-t', '--top-level-domain'):
             tlds = arg.split(',')
         elif opt in ('-l', '--letters'):
-            letters = arg
+            letters = arg.lower()
+        elif opt in ('-b', '--beginning'):
+            beginning = arg.lower()
         elif opt in ('-s', '--sleep'):
             sleep_time = int(arg)
 
-    if len(tlds) == 1:
-        verbose = True
+    beginning     = ''.join(list(repeat('a', domain_length)))
 
-    for x in itertools.permutations(letters, domain_length):
-        x = ''.join(list(x))
-        for tld in tlds:
-            try:
-                output = str(subprocess.check_output(['whois', '{}.{}'.format(x, tld)]))
-                if re.search('.*(n|N)o (m|M)atch|NO MATCH|'            +
-                               '((n|N)ot (f|F)ound)|NOT FOUND|'        +
-                               '(n|N)ot (a|A)vailable|NOT AVAILABLE.*',  # <- Im not sure if this would mean
-                               output):                                  #    not available as in "can't find
-                                                                         #    domain in whois db or as in
-                                                                         #    unavailable for registry.
-                    print('{}.{} is available!'.format(x, tld))
-                elif verbose:
-                    print('{}.{} is unavailable.'.format(x, tld))
-            except subprocess.CalledProcessError:
-                if verbose:
-                    print('Something went wrong!')
-                    exit(1)
+    slds = list(map(lambda x: ''.join(list(x)), product(letters, repeat=domain_length)))
+    domains = map(lambda x: '.'.join(list(x)), product(slds[slds.index(beginning):], tlds))
+    for domain in domains:
+        try: output = str(subprocess.check_output(['whois', domain])).lower()
+        except subprocess.CalledProcessError:
+            if verbose:
+                print('Something went wrong!')
+
+        if re.search('no match|not found|not available', output):
+            print('{} is available!'.format(domain))
+        elif verbose:
+            m = re.search('.*(expiry|expires?).*: ?(.*)\n', output)
+
+            try: expries = m.group(2)
+            except AttributeError: expires = 'unknown'
+
+            print('{} is unavailable.\tExpires: {}'.format(domain, expires))
 
         time.sleep(sleep_time)
 
