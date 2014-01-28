@@ -26,7 +26,7 @@ that still are unregistered.
     Default: [a-zA-Z0-9-]
   * -s --sleep SECONDS  
     Some whois servers may temporarily ban you when doing many queries in short notice.  
-    The argument can be written as a fractal.  
+    The argument can be written as a fraction.  
     Default: 1
   * -b --beginning COMBINATION  
     The search is performed in alphabetical order. With this option you can  
