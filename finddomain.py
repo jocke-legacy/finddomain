@@ -79,37 +79,45 @@ tlds = ['biz', 'cat',
 def help():
     print('Usage: finddomain [OPTIONS]\nsee README.md')
 
-def main(argv, tldlist):
+def main(argv):
+    global tlds
+    
     if not len(argv):
         print('No arguments.')
         help()
         exit(1)
     
-    try: opts, args = getopt.getopt(argv, 'hc:t:l:s:', ['help', 'length=', 'top-level-domain=', 'letters=', 'sleep='])
+    try: opts, args = getopt.getopt(argv, 'hvc:t:l:s:', ['help', 'verbose', 'length=', 'top-level-domain=', 'letters=', 'sleep='])
     except getopt.GetoptError as err:
         print(str(err))
         help()
         sys.exit(1)
 
+    verbose       = False
     domain_length = 4;
-    sleep_time = 1;
-    letters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    sleep_time    = 1;
+    letters       = 'abcdefghijklmnopqrstuvwxyz0123456789';
     for (opt, arg) in opts:
         if opt in ('-h', '--help'):
             help()
             exit(1)
+        elif opt in ('-v', '--verbose'):
+            verbose = True
         elif opt in ('-c', '--length'):
             domain_length = int(arg)
         elif opt in ('-t', '--top-level-domain'):
-            tldlist = [arg]
+            tlds = arg.split(',')
         elif opt in ('-l', '--letters'):
             letters = arg
         elif opt in ('-s', '--sleep'):
             sleep_time = int(arg)
 
+    if len(tlds) == 1:
+        verbose = True
+
     for x in itertools.permutations(letters, domain_length):
         x = ''.join(list(x))
-        for tld in tldlist:
+        for tld in tlds:
             try:
                 output = str(subprocess.check_output(['whois', '{}.{}'.format(x, tld)]))
                 if re.search('.*(n|N)o (m|M)atch|NO MATCH|'            +
@@ -119,7 +127,7 @@ def main(argv, tldlist):
                                                                          #    domain in whois db or as in
                                                                          #    unavailable for registry.
                     print('{}.{} is available!'.format(x, tld))
-                elif len(tlds) == 1:
+                elif verbose:
                     print('{}.{} is unavailable.'.format(x, tld))
             except subprocess.CalledProcessError:
                 if len(tlds) == 1:
@@ -129,4 +137,4 @@ def main(argv, tldlist):
         time.sleep(sleep_time)
 
 if __name__ == '__main__':
-    main(sys.argv[1:], tlds)
+    main(sys.argv[1:])

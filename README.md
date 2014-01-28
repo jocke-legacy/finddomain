@@ -20,6 +20,7 @@ that still are unregistered.
     The TLD you want to search in.  
     If not specified it will try most of the top level domains that exists  
     at the time of writing.
+    You can specify multiple TLDs by separation them with a `,` (no spaces!)
   * -l --letters _LETTERS_  
     The letters you want your domain to contain.  
     Default: [a-zA-Z0-9-]
