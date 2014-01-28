@@ -77,18 +77,25 @@ tlds = ['biz', 'cat',
 
 
 def help():
-    print('usage: finddomain -l <length> | --length=<length> [-t <tld> | --top-level-domain=<tld>]')
+    print('Usage: finddomain [OPTIONS]\nsee README.md')
 
-def main(argv):
-    try: opts, args = getopt.getopt(argv, 'hc:t:l:', ['length=', 'top-level-domain=', 'letters='])
+def main(argv, tlds):
+    if not len(argv):
+        print('No arguments.')
+        help()
+        exit(1)
+    
+    try: opts, args = getopt.getopt(argv, 'hc:t:l:s:', ['help', 'length=', 'top-level-domain=', 'letters=', 'sleep='])
     except getopt.GetoptError as err:
         print(str(err))
         help()
         sys.exit(1)
 
+    domain_length = 4;
+    sleep_time = 1;
     letters = 'abcdefghijklmnopqrstuvwxyz0123456789';
     for (opt, arg) in opts:
-        if opt == '-h':
+        if opt in ('-h', '--help'):
             help()
             exit(1)
         elif opt in ('-c', '--length'):
@@ -97,29 +104,28 @@ def main(argv):
             tlds = [arg]
         elif opt in ('-l', '--letters'):
             letters = arg
+        elif opt in ('-s', '--sleep'):
+            sleep_time = int(arg)
 
-    try:
-        for x in itertools.permutations(letters, domain_length):
-            x = ''.join(list(x))
-            for tld in tlds:
-                try: output = str(subprocess.check_output(['whois', '{}.{}'.format(x, tld)]))
-                except subprocess.CalledProcessError:
-                    if len(tlds) == 1:
-                        print('Something went wrong, try again!')
- 
-                if re.search('(n|N)o (m|M)atch|NO MATCH|'            +
-                             '((n|N)ot (f|F)ound)|NOT FOUND|'        +
-                             '(n|N)ot (a|A)vailable|NOT AVAILABLE.*'   # <- Im not sure if this would mean
-                             , output):                                #    not available as in "can't find
-                                                                       #    domain in whois db or as in
-                                                                       #    unavailable for registry.
-                    print('{}.{} is available!'.format(x, tld))
-                elif len(tlds) == 1:
-                    print('{}.{} is unavailable.'.format(x, tld))
-            time.sleep(1)
-    except UnboundLocalError:
-        help()
-        sys.exit(1)
+    for x in itertools.permutations(letters, domain_length):
+        x = ''.join(list(x))
+        for tld in tlds:
+            try: output = str(subprocess.check_output(['whois', '{}.{}'.format(x, tld)]))
+            except subprocess.CalledProcessError:
+                if len(tlds) == 1:
+                    print('Something went wrong, try again!')
+
+            if re.search('(n|N)o (m|M)atch|NO MATCH|'            +
+                         '((n|N)ot (f|F)ound)|NOT FOUND|'        +
+                         '(n|N)ot (a|A)vailable|NOT AVAILABLE.*'   # <- Im not sure if this would mean
+                         , output):                                #    not available as in "can't find
+                                                                   #    domain in whois db or as in
+                                                                   #    unavailable for registry.
+                print('{}.{} is available!'.format(x, tld))
+            elif len(tlds) == 1:
+                print('{}.{} is unavailable.'.format(x, tld))
+
+        time.sleep(sleep_time)
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv[1:], tlds)
