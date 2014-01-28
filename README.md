@@ -9,13 +9,13 @@ that still are unregistered.
 
 ## Usage
 
-finddomain [OPTIONS]
+`finddomain [OPTIONS]`
 
 ### Available options
     * -c --length _LENGTH_  
-      The length of your desired domain name  
-      Default: 4
-   * -t --top-level-domain _TLD_  
+       The length of your desired domain name  
+       Default: 4
+    * -t --top-level-domain _TLD_  
       The TLD you want to search in.  
       If not specified it will try most of the top level domains that exists  
       at the time of writing.
@@ -29,9 +29,13 @@ finddomain [OPTIONS]
       
 ### Example
     finddomain -c 3 -t se -l abc  
-or  
-    finddomain --length=3 --top-level-domain=se --letters=abc  
+
+or
+
+    finddomain --length=3 --top-level-domain=se --letters=abc
+
 Will output:  
+
     abc.se is unavailable.
     acb.se is unavailable.
     bac.se is unavailable.
