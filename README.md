@@ -5,27 +5,28 @@ This little python script is intended to find the shorter domain names
 that still are unregistered.
 
 ## Requirements
-    * whois (not python whois, the stand-alone whois)
+
+  * whois (not python whois, the stand-alone whois)
 
 ## Usage
 
-`finddomain [OPTIONS]`
+    finddomain [OPTIONS]
 
 ### Available options
-    * -c --length _LENGTH_  
-       The length of your desired domain name  
-       Default: 4
-    * -t --top-level-domain _TLD_  
-      The TLD you want to search in.  
-      If not specified it will try most of the top level domains that exists  
-      at the time of writing.
-    * -l --letters _LETTERS_  
-      The letters you want your domain to contain.  
-      Default: [a-zA-Z0-9-]
-    * -s --sleep _SECONDS_  
-      Some whois servers may temporarily ban you when doing many queries in short notice.  
-      The argument can be written as a fractal.  
-      Default: 1
+  * -c --length _LENGTH_  
+     The length of your desired domain name  
+     Default: 4
+  * -t --top-level-domain _TLD_  
+    The TLD you want to search in.  
+    If not specified it will try most of the top level domains that exists  
+    at the time of writing.
+  * -l --letters _LETTERS_  
+    The letters you want your domain to contain.  
+    Default: [a-zA-Z0-9-]
+  * -s --sleep _SECONDS_  
+    Some whois servers may temporarily ban you when doing many queries in short notice.  
+    The argument can be written as a fractal.  
+    Default: 1
       
 ### Example
     finddomain -c 3 -t se -l abc  
