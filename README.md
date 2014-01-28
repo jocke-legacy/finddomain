@@ -28,7 +28,11 @@ that still are unregistered.
     Some whois servers may temporarily ban you when doing many queries in short notice.  
     The argument can be written as a fractal.  
     Default: 1
-      
+  * -v --verbose
+    Verbose output.
+    Default: Set if single tld is being used.
+
+
 ### Example
     finddomain -c 3 -t se -l abc  
 

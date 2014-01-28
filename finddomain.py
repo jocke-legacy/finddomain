@@ -130,8 +130,8 @@ def main(argv):
                 elif verbose:
                     print('{}.{} is unavailable.'.format(x, tld))
             except subprocess.CalledProcessError:
-                if len(tlds) == 1:
-                    print('Something went wrong, try again!')
+                if verbose:
+                    print('Something went wrong!')
                     exit(1)
 
         time.sleep(sleep_time)
