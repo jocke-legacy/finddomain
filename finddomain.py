@@ -79,7 +79,7 @@ tlds = ['biz', 'cat',
 def help():
     print('Usage: finddomain [OPTIONS]\nsee README.md')
 
-def main(argv, tlds):
+def main(argv, tldlist):
     if not len(argv):
         print('No arguments.')
         help()
@@ -101,7 +101,7 @@ def main(argv, tlds):
         elif opt in ('-c', '--length'):
             domain_length = int(arg)
         elif opt in ('-t', '--top-level-domain'):
-            tlds = [arg]
+            tldlist = [arg]
         elif opt in ('-l', '--letters'):
             letters = arg
         elif opt in ('-s', '--sleep'):
@@ -109,21 +109,22 @@ def main(argv, tlds):
 
     for x in itertools.permutations(letters, domain_length):
         x = ''.join(list(x))
-        for tld in tlds:
-            try: output = str(subprocess.check_output(['whois', '{}.{}'.format(x, tld)]))
+        for tld in tldlist:
+            try:
+                output = str(subprocess.check_output(['whois', '{}.{}'.format(x, tld)]))
+                if re.search('.*(n|N)o (m|M)atch|NO MATCH|'            +
+                               '((n|N)ot (f|F)ound)|NOT FOUND|'        +
+                               '(n|N)ot (a|A)vailable|NOT AVAILABLE.*',  # <- Im not sure if this would mean
+                               output):                                  #    not available as in "can't find
+                                                                         #    domain in whois db or as in
+                                                                         #    unavailable for registry.
+                    print('{}.{} is available!'.format(x, tld))
+                elif len(tlds) == 1:
+                    print('{}.{} is unavailable.'.format(x, tld))
             except subprocess.CalledProcessError:
                 if len(tlds) == 1:
                     print('Something went wrong, try again!')
-
-            if re.search('(n|N)o (m|M)atch|NO MATCH|'            +
-                         '((n|N)ot (f|F)ound)|NOT FOUND|'        +
-                         '(n|N)ot (a|A)vailable|NOT AVAILABLE.*'   # <- Im not sure if this would mean
-                         , output):                                #    not available as in "can't find
-                                                                   #    domain in whois db or as in
-                                                                   #    unavailable for registry.
-                print('{}.{} is available!'.format(x, tld))
-            elif len(tlds) == 1:
-                print('{}.{} is unavailable.'.format(x, tld))
+                    exit(1)
 
         time.sleep(sleep_time)
 
