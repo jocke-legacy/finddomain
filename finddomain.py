@@ -92,7 +92,8 @@ def main(argv):
     verbose       = False
     domain_length = 4
     sleep_time    = 1
-    letters       = 'abcdefghijklmnopqrstuvwxyz0123456789-'
+    letters       = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    beginning = ''.join(list(repeat('a', domain_length)))
 
     for opt, arg in opts:
         if opt in ('-h', '--help'):
@@ -102,19 +103,25 @@ def main(argv):
             verbose = True
         elif opt in ('-c', '--length'):
             domain_length = int(arg)
+            beginning = ''.join(list(repeat('a', domain_length)))
         elif opt in ('-t', '--top-level-domain'):
             tlds = arg.split(',')
+            verbose = True if len(tlds) == 1 else verbose
         elif opt in ('-l', '--letters'):
             letters = arg.lower()
         elif opt in ('-b', '--beginning'):
             beginning = arg.lower()
         elif opt in ('-s', '--sleep'):
-            sleep_time = int(arg)
+            sleep_time = float(arg)
 
-    beginning     = ''.join(list(repeat('a', domain_length)))
 
-    slds = list(map(lambda x: ''.join(list(x)), product(letters, repeat=domain_length)))
-    domains = map(lambda x: '.'.join(list(x)), product(slds[slds.index(beginning):], tlds))
+    slds = [''.join(list(x)) for x in product(letters, repeat=domain_length)]
+    try: domains = ['.'.join(list(x)) for x in product(slds[slds.index(beginning):], tlds)]
+    except ValueError:
+        print('Your settings does not permit you to have \'{}\' as a beginning of the search!'.format(beginning))
+        exit(1)
+#    slds = list(map(lambda x: ''.join(list(x)), product(letters, repeat=domain_length)))
+#    domains = map(lambda x: '.'.join(list(x)), product(slds[slds.index(beginning):], tlds))
     for domain in domains:
         try: output = str(subprocess.check_output(['whois', domain])).lower()
         except subprocess.CalledProcessError:
@@ -124,14 +131,13 @@ def main(argv):
         if re.search('no match|not found|not available', output):
             print('{} is available!'.format(domain))
         elif verbose:
-            m = re.search('.*(expiry|expires?).*: ?(.*)\n', output)
-
-            try: expries = m.group(2)
+            try: expires = re.search('.*expi(res?|ry|ration).*?:\s*([-0-9a-z/: ]+)', output).group(2)
             except AttributeError: expires = 'unknown'
 
-            print('{} is unavailable.\tExpires: {}'.format(domain, expires))
+            print('{} is unavailable.\texpires: {}'.format(domain, expires))
 
         time.sleep(sleep_time)
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    try: main(sys.argv[1:])
+    except KeyboardInterrupt: print('\n')

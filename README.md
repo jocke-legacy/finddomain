@@ -23,7 +23,7 @@ that still are unregistered.
     You can specify multiple TLDs by separation them with a `,` (no spaces!)
   * -l --letters LETTERS  
     The letters you want your domain to contain.  
-    Default: [a-zA-Z0-9-]
+    Default: [a-zA-Z0-9]
   * -s --sleep SECONDS  
     Some whois servers may temporarily ban you when doing many queries in short notice.  
     The argument can be written as a fraction.  
@@ -32,10 +32,9 @@ that still are unregistered.
     The search is performed in alphabetical order. With this option you can  
     choose which combination to start with (this reduces the number of domains that  
     will be searchd)
-  * -v --verbose
+  * -v --verbose  
     Verbose output.  
     Default: Set if single tld is being used.
-
 
 ### Example
     finddomain -c 3 -t se -l abc  
