@@ -120,15 +120,14 @@ def main(argv):
     except ValueError:
         print('Your settings does not permit you to have \'{}\' as a beginning of the search!'.format(beginning))
         exit(1)
-#    slds = list(map(lambda x: ''.join(list(x)), product(letters, repeat=domain_length)))
-#    domains = map(lambda x: '.'.join(list(x)), product(slds[slds.index(beginning):], tlds))
+
     for domain in domains:
         try: output = str(subprocess.check_output(['whois', domain])).lower()
         except subprocess.CalledProcessError:
             if verbose:
                 print('Something went wrong!')
 
-        if re.search('no match|not found|not available', output):
+        if re.search('no match|not found', output):
             print('{} is available!'.format(domain))
         elif verbose:
             try: expires = re.search('.*expi(res?|ry|ration).*?:\s*([-0-9a-z/: ]+)', output).group(2)
