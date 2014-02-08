@@ -45,12 +45,14 @@ or
 
 Will output:  
 
-    abc.se is unavailable.
-    acb.se is unavailable.
-    bac.se is unavailable.
-    bca.se is unavailable.
-    cab.se is unavailable.
-    cba.se is unavailable.
+    aaa.se is unavailable.  expires: 2014-12-31
+    aab.se is unavailable.  expires: 2014-06-06
+    aac.se is unavailable.  expires: 2014-11-21
+    aba.se is unavailable.  expires: 2014-12-31
+    abb.se is unavailable.  expires: 2014-06-10
+    abc.se is unavailable.  expires: 2014-12-31
+    aca.se is unavailable.  expires: 2015-02-10
+    ...
 
 ## Licensing
 
